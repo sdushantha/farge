@@ -37,7 +37,7 @@ $ sudo make install
 ```bash
 # Download the farge source code, save as farge
 # and make it executeable
-$ curl -L https://git.io/raw-farge > farge && chmod +x kunst
+$ curl -L https://git.io/raw-farge > farge && chmod +x farge
 
 # Then move farge to somewhere in your $PATH
 # Here is an example
