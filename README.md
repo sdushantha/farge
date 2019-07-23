@@ -16,7 +16,7 @@ it. This tool is able to use a varaiety of image viewers like ```feh```,
 - ```bash```
 - ```imagemagick```
 - ```colorpicker``` (https://github.com/ym1234/colorpicker)
-- ```feh``` (Other: ```mpv``` or ```sxiv```, but you must specify it using the ```--image_viewer``` flag)
+- ```feh``` (Other: ```mpv``` or ```sxiv```, but you must specify it using the ```--image-viewer``` flag)
 
 
 ## Installation
@@ -47,7 +47,7 @@ $ mv farge ~/scripts/
 ## Usage
 ```bash
 $ farge --help
-usage: farge [-h] [--no_preview] [--no_color_code] [--rbg]  [--version]
+usage: farge [-h] [--no-preview] [--no-color-code] [--rbg]  [--version]
  
 ┌─┐┌─┐┬─┐┌─┐┌─┐
 ├┤ ├─┤├┬┘│ ┬├┤ 
