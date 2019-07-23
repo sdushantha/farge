@@ -9,7 +9,7 @@
 #  imagemagick
 #  image viewer (feh, mpv, feh)
 
-VERSION="1.0.0"
+VERSION="1.0.1"
 DIR=/tmp/
 color_type="hex"
 write_color_code=true
@@ -33,10 +33,10 @@ show_help() {
 	echo ""
 	echo "optional arguments:"
 	echo "   --help                show this help message and exit"
-	echo "   --no_preview          dont show the selected color in a preview window"
-	echo "   --no_color_code       dont write the color code on the preview window"
+	echo "   --no-preview          dont show the selected color in a preview window"
+	echo "   --no-color-code       dont write the color code on the preview window"
 	echo "   --rgb                 show the color code as RGB instead of HEX"
-    echo "   --image_viewer        image viewer to use to show the preview (feh, mpv, sxiv)"
+    echo "   --image-viewer        image viewer to use to show the preview (feh, mpv, sxiv)"
 	echo "   --version             show the version of kunst you are using"
 }
 
@@ -94,10 +94,10 @@ main(){
 
 while [[ "$1" ]]; do
     case "$1" in
-        "--no_preview") preview=false ;;
-        "--no_color_code") write_color_code=false ;;
+        "--no-preview") preview=false ;;
+        "--no-color-code") write_color_code=false ;;
         "--rgb") color_type="rgb" ;;
-        "--image_viewer") image_viewer="$2" ;;
+        "--image-viewer") image_viewer="$2" ;;
         "--version") echo $VERSION && exit ;;
         "--help") show_help && exit ;;
     esac

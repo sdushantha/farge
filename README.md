@@ -56,10 +56,10 @@ Click on a pixel on your screen and show its color value
 
 optional arguments:
    --help                show this help message and exit
-   --no_preview          dont show the selected color in a preview window
-   --no_color_code       dont write the color code on the preview window
+   --no-preview          dont show the selected color in a preview window
+   --no-color-code       dont write the color code on the preview window
    --rgb                 show the color code as RGB instead of HEX
-   --image_viewer        image viewer to use to show the preview (feh, mpv, sxiv)
+   --image-viewer        image viewer to use to show the preview (feh, mpv, sxiv)
    --version             show the version of kunst you are using
 ```
 
