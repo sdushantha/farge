@@ -105,7 +105,7 @@ main() {
 
 	# Save the color code to clipboard
 	if [ "$WAYLAND_DISPLAY" ]; then
-		echo $color_code | wlcopy
+		echo $color_code | wl-copy
 	else
 		echo $color_code | xclip -selection c
 	fi
