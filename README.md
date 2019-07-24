@@ -47,7 +47,7 @@ $ mv farge ~/scripts/
 ## Usage
 ```bash
 $ farge --help
-usage: farge [-h] [--no-preview] [--no-color-code] [--rbg]  [--version]
+usage: farge [-h] [--no_preview] [--no_color_code] [--rbg]  [--version]
  
 ┌─┐┌─┐┬─┐┌─┐┌─┐
 ├┤ ├─┤├┬┘│ ┬├┤ 
@@ -60,6 +60,7 @@ optional arguments:
    --no-color-code       dont write the color code on the preview window
    --rgb                 show the color code as RGB instead of HEX
    --image-viewer        image viewer to use to show the preview (feh, mpv, sxiv)
+   --stdout              output the color value to stdout
    --version             show the version of kunst you are using
 ```
 
