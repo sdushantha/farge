@@ -1,29 +1,34 @@
 #!/usr/bin/env bash
 # ┌─┐┌─┐┬─┐┌─┐┌─┐
-# ├┤ ├─┤├┬┘│ ┬├┤ 
+# ├┤ ├─┤├┬┘│ ┬├┤
 # ┴  ┴ ┴┴└─└─┘└─┘
 # Created by Siddharth Dushantha
 #
 # Dependencies:
-#  colorpicker (https://github.com/ym1234/colorpicker)
 #  imagemagick
-#  image viewer (feh, mpv, feh)
+#  image viewer (feh, mpv, sxiv)
 
-VERSION="1.0.1"
+# Dependencies for Wayland
+#  Set feh,sxiv as floating and borderless
+#  Grim(https://wayland.emersion.fr/grim/)
+#  Slurp(https://wayland.emersion.fr/slurp/)
+#  wl-copy(https://github.com/bugaevc/wl-clipboard)
+
+# Dependencies for X
+#  colorpicker (https://github.com/ym1234/colorpicker)
+
+VERSION="1.0.2"
 DIR=/tmp/
-
 color_type="hex"
 write_color_code=true
 preview=true
 image_viewer="feh"
 stdout=false
 
-
-hex_to_rgb(){
-    # Convert a hex value WITHOUT the hashtag (#)
-    printf "(%d,%d,%d)\n" 0x${1:0:2} 0x${1:2:2} 0x${1:4:2}
+hex_to_rgb() {
+	# Convert a hex value WITHOUT the hashtag (#)
+	printf "(%d,%d,%d)\n" 0x${1:0:2} 0x${1:2:2} 0x${1:4:2}
 }
-
 
 show_help() {
 	echo "usage: farge [-h] [--no_preview] [--no_color_code] [--rbg]  [--version]"
@@ -38,92 +43,108 @@ show_help() {
 	echo "   --no-preview          dont show the selected color in a preview window"
 	echo "   --no-color-code       dont write the color code on the preview window"
 	echo "   --rgb                 show the color code as RGB instead of HEX"
-    echo "   --image-viewer        image viewer to use to show the preview (feh, mpv, sxiv)"
-    echo "   --stdout              output the color value to stdout"
+	echo "   --image-viewer        image viewer to use to show the preview (feh, mpv, sxiv)"
+	echo "   --stdout              output the color value to stdout"
 	echo "   --version             show the version of kunst you are using"
 }
 
+check_dependencies() {
+	# Only check colorpicker if it's running in X,else check for slurp and grim
+	if [ "$WAYLAND_DISPLAY" ]; then
+		CHECKSLURP=$(command -v slurp)
+		CHECKGRIM=$(command -v grim)
+		CHECKCB=$(command -v wl-copy)
+		[[ ${#CHECKSLURP} -eq 0 ]] && echo "wl-copy needs to be installed: https://github.com/bugaevc/wl-clipboard" && exit
+		[[ ${#CHECKSLURP} -eq 0 ]] && echo "slurp needs to be installed: https://wayland.emersion.fr/slurp/" && exit
+		[[ ${#CHECKGRIM} -eq 0 ]] && echo "grim need to be installed: https://wayland.emersion.fr/grim/" && exit
+	else
+		COLORPICKER=$(command -v colorpicker)
+		[[ ${#COLORPICKER} -eq 0 ]] && echo "colorpicker need to be installed: https://github.com/ym1234/colorpicker" && exit
+	fi
 
-check_dependencies(){
-    IMAGEMAGICK=$(command -v convert)
-    COLORPICKER=$(command -v colorpicker)
+	IMAGEMAGICK=$(command -v convert)
+	# We are using the variable $image_viewer because we also have to check if
+	# the image viewer the user has told us to use actually exists.
+	IMAGE_VIEWER=$(command -v $image_viewer)
 
-    # We are using the variable $image_viewer because we also have to check if 
-    # the image viewer the user has told us to use actually exists.
-    IMAGE_VIEWER=$(command -v $image_viewer)
-
-    [[ ${#IMAGEMAGICK} -eq 0 ]] && echo "imagemagick needs to be installed" && exit
-    [[ ${#COLORPICKER} -eq 0 ]] && echo "colorpicker need to be installed: https://github.com/ym1234/colorpicker" && exit
-    [[ ${#IMAGE_VIEWER} -eq 0 ]] && echo "$image_viewer needs to be installed or use another image by using --image-viewer <name>" && exit
+	[[ ${#IMAGEMAGICK} -eq 0 ]] && echo "imagemagick needs to be installed" && exit
+	[[ ${#IMAGE_VIEWER} -eq 0 ]] && echo "$image_viewer needs to be installed or use another image by using --image-viewer <name>" && exit
 }
 
+main() {
+	if [ "$WAYLAND_DISPLAY" ]; then
+		hex_color=$(grim -g "$(slurp -p)" -t ppm - | convert - -format '%[pixel:p{0,0}]' txt:- | tail -1 | grep '#' | awk '{print $3}')
+	else
+		hex_color=$(colorpicker -soq)
+	fi
 
-main(){
-    hex_color=$(colorpicker -soq)
+	# If no color is chosen, then exit
+	[[ ${#hex_color} -eq 0 ]] && echo "No color was selected" && exit
 
-    # If no color is chosen, then exit
-    [[ ${#hex_color} -eq 0 ]] && echo "No color was selected" && exit
+	mkdir -p $DIR
 
-    mkdir -p $DIR
+	# Combine the dir and hex color code to form the file name
+	fname=$DIR/$hex_color.png
 
-    # Combine the dir and hex color code to form the file name
-    fname=$DIR/$hex_color.png
+	# Create a 100x100 image, filled with the selected color
+	convert -size 100x100 xc:$hex_color $fname
 
-    # Create a 100x100 image, filled with the selected color
-    convert -size 100x100 xc:$hex_color $fname
+	if [ $write_color_code == true ]; then
+		color_code=$hex_color
 
-    if [ $write_color_code == true ];then
-        color_code=$hex_color
+		if [ $color_type == "rgb" ]; then
+			# Remove the hashtag
+			hex="${hex_color//\#/}"
 
-        if [ $color_type == "rgb" ];then
-            # Remove the hashtag
-            hex="${hex_color//\#}"
+			color_code=$(hex_to_rgb $hex)
+		fi
 
-            color_code=$(hex_to_rgb $hex)
-        fi
+		# Write the color code in the center of the image
+		convert $fname -gravity Center -pointsize 10 -annotate 0 "$color_code" $fname
+	fi
 
-        # Write the color code in the center of the image
-        convert $fname -gravity Center -pointsize 10 -annotate 0 "$color_code" $fname
-    fi
+	# Save the color code to clipboard
+	if [ "$WAYLAND_DISPLAY" ]; then
+		echo $color_code | wl-copy
+	else
+		echo $color_code | xclip -selection c
+	fi
 
-    # Save the color code to clipboard
-    echo $color_code | xclip -selection c
+	# Output the color code to stdout only if the user uses the --stdout flag
+	[[ $stdout == true ]] && echo $color_code
 
-    # Output the color code to stdout only if the user uses the --stdout flag
-    [[ $stdout == true ]] && echo $color_code
-
-    if [ $preview == true ]; then
-        case $image_viewer in
-            "mpv")
-                mpv --geometry=100x100 $fname &> /dev/null &
-                ;;
-            "feh")
-                feh --geometry=100x100 $fname &> /dev/null &
-                ;;
-            "sxiv")
-                sxiv -g=100x100 -b $fname &> /dev/null &
-                ;;
-            *)
-                # If the image viewer given by the user is not supported by
-                # farge, then let the user know
-                echo "The image viewer $image_viewer is not supported yet."
-                echo "Make an issue requesting your image viewer: https://github.com/sdushantha/farge/issues/new"
-        esac
-    fi
+	if [ $preview == true ]; then
+		case $image_viewer in
+		"mpv")
+			mpv --geometry=100x100 $fname &>/dev/null &
+			;;
+		"feh")
+			feh --geometry=100x100 $fname &>/dev/null &
+			;;
+		"sxiv")
+			sxiv -g=100x100 -b $fname &>/dev/null &
+			;;
+		*)
+			# If the image viewer given by the user is not supported by
+			# farge, then let the user know
+			echo "The image viewer $image_viewer is not supported yet."
+			echo "Make an issue requesting your image viewer: https://github.com/sdushantha/farge/issues/new"
+			;;
+		esac
+	fi
 }
-
 
 while [[ "$1" ]]; do
-    case "$1" in
-        "--no-preview") preview=false ;;
-        "--no-color-code") write_color_code=false ;;
-        "--rgb") color_type="rgb" ;;
-        "--image-viewer") image_viewer="$2" ;;
-        "--stdout") stdout=true ;;
-        "--version") echo $VERSION && exit ;;
-        "--help") show_help && exit ;;
-    esac
-    shift
+	case "$1" in
+	"--no-preview") preview=false ;;
+	"--no-color-code") write_color_code=false ;;
+	"--rgb") color_type="rgb" ;;
+	"--image-viewer") image_viewer="$2" ;;
+	"--stdout") stdout=true ;;
+	"--version") echo $VERSION && exit ;;
+	"--help") show_help && exit ;;
+	esac
+	shift
 done
 
 check_dependencies
