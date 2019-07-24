@@ -15,7 +15,10 @@ it. This tool is able to use a varaiety of image viewers like ```feh```,
 ## Dependencies
 - ```bash```
 - ```imagemagick```
-- ```colorpicker``` (https://github.com/ym1234/colorpicker)
+- ```slurp``` (https://wayland.emersion.fr/slurp/)(For Wayland support)
+- ```grim```  (https://wayland.emersion.fr/grim/)(For Wayland support)
+- ```wl-copy```  (https://github.com/bugaevc/wl-clipboard)(For Wayland Clipboard support)
+- ```colorpicker``` (https://github.com/ym1234/colorpicker)(For X support)
 - ```feh``` (Other: ```mpv``` or ```sxiv```, but you must specify it using the ```--image-viewer``` flag)
 
 
