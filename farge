@@ -11,11 +11,12 @@
 
 VERSION="1.0.1"
 DIR=/tmp/
+
 color_type="hex"
 write_color_code=true
 preview=true
 image_viewer="feh"
-
+stdout=false
 
 hex_to_rgb(){
     # Convert a hex value WITHOUT the hashtag (#)
@@ -37,6 +38,7 @@ show_help() {
 	echo "   --no-color-code       dont write the color code on the preview window"
 	echo "   --rgb                 show the color code as RGB instead of HEX"
     echo "   --image-viewer        image viewer to use to show the preview (feh, mpv, sxiv)"
+    echo "   --stdout              output the color value to stdout"
 	echo "   --version             show the version of kunst you are using"
 }
 
@@ -72,6 +74,9 @@ main(){
     # Save the color code to clipboard
     echo $color_code | xclip -selection c
 
+    # Output the color code to stdout only if the user uses the --stdout flag
+    [[ $stdout == true ]] && echo $color_code
+
     if [ $preview == true ]; then
         case $image_viewer in
             "mpv")
@@ -98,6 +103,7 @@ while [[ "$1" ]]; do
         "--no-color-code") write_color_code=false ;;
         "--rgb") color_type="rgb" ;;
         "--image-viewer") image_viewer="$2" ;;
+        "--stdout") stdout=true ;;
         "--version") echo $VERSION && exit ;;
         "--help") show_help && exit ;;
     esac
