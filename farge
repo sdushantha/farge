@@ -18,6 +18,7 @@ preview=true
 image_viewer="feh"
 stdout=false
 
+
 hex_to_rgb(){
     # Convert a hex value WITHOUT the hashtag (#)
     printf "(%d,%d,%d)\n" 0x${1:0:2} 0x${1:2:2} 0x${1:4:2}
@@ -40,6 +41,20 @@ show_help() {
     echo "   --image-viewer        image viewer to use to show the preview (feh, mpv, sxiv)"
     echo "   --stdout              output the color value to stdout"
 	echo "   --version             show the version of kunst you are using"
+}
+
+
+check_dependencies(){
+    IMAGEMAGICK=$(command -v convert)
+    COLORPICKER=$(command -v colorpicker)
+
+    # We are using the variable $image_viewer because we also have to check if 
+    # the image viewer the user has told us to use actually exists.
+    IMAGE_VIEWER=$(command -v $image_viewer)
+
+    [[ ${#IMAGEMAGICK} -eq 0 ]] && echo "imagemagick needs to be installed" && exit
+    [[ ${#COLORPICKER} -eq 0 ]] && echo "colorpicker need to be installed: https://github.com/ym1234/colorpicker" && exit
+    [[ ${#IMAGE_VIEWER} -eq 0 ]] && echo "$image_viewer needs to be installed or use another image by using --image-viewer <name>" && exit
 }
 
 
@@ -91,7 +106,8 @@ main(){
             *)
                 # If the image viewer given by the user is not supported by
                 # farge, then let the user know
-                echo "Invalid image viewer: $image_viewer"
+                echo "The image viewer $image_viewer is not supported yet."
+                echo "Make an issue requesting your image viewer: https://github.com/sdushantha/farge/issues/new"
         esac
     fi
 }
@@ -109,6 +125,8 @@ while [[ "$1" ]]; do
     esac
     shift
 done
+
+check_dependencies
 
 # Run the main function where all the magic happens
 main
