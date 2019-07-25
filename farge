@@ -25,10 +25,12 @@ preview=true
 image_viewer="feh"
 stdout=false
 
+
 hex_to_rgb() {
 	# Convert a hex value WITHOUT the hashtag (#)
 	printf "(%d,%d,%d)\n" 0x${1:0:2} 0x${1:2:2} 0x${1:4:2}
 }
+
 
 show_help() {
 	echo "usage: farge [-h] [--no_preview] [--no_color_code] [--rbg]  [--version]"
@@ -47,6 +49,7 @@ show_help() {
 	echo "   --stdout              output the color value to stdout"
 	echo "   --version             show the version of kunst you are using"
 }
+
 
 check_dependencies() {
 	# Only check colorpicker if it's running in X,else check for slurp and grim
@@ -71,11 +74,16 @@ check_dependencies() {
 	[[ ${#IMAGE_VIEWER} -eq 0 ]] && echo "$image_viewer needs to be installed or use another image by using --image-viewer <name>" && exit
 }
 
+
+# Caclulate math equations with decimals. This is better than $(())
+calc(){ awk "BEGIN { print $*}"; }
+
+
 main() {
 	if [ "$WAYLAND_DISPLAY" ]; then
 		hex_color=$(grim -g "$(slurp -p)" -t ppm - | convert - -format '%[pixel:p{0,0}]' txt:- | tail -1 | grep '#' | awk '{print $3}')
 	else
-		hex_color=$(colorpicker -soq)
+		hex_color=$(colorpicker -doq)
 	fi
 
 	# If no color is chosen, then exit
@@ -133,6 +141,7 @@ main() {
 		esac
 	fi
 }
+
 
 while [[ "$1" ]]; do
 	case "$1" in
