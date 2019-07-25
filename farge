@@ -26,12 +26,6 @@ image_viewer="feh"
 stdout=false
 
 
-hex_to_rgb() {
-	# Convert a hex value WITHOUT the hashtag (#)
-	printf "(%d,%d,%d)\n" 0x${1:0:2} 0x${1:2:2} 0x${1:4:2}
-}
-
-
 show_help() {
 	echo "usage: farge [-h] [--no_preview] [--no_color_code] [--rbg]  [--version]"
 	echo " "
@@ -48,6 +42,14 @@ show_help() {
 	echo "   --image-viewer        image viewer to use to show the preview (feh, mpv, sxiv)"
 	echo "   --stdout              output the color value to stdout"
 	echo "   --version             show the version of kunst you are using"
+}
+
+
+hex_to_rgb() {
+	# Convert a hex value WITHOUT the hashtag (#)
+    R=$(printf "%d" 0x${1:0:2})
+    G=$(printf "%d" 0x${1:2:2})
+    B=$(printf "%d" 0x${1:4:2})
 }
 
 
@@ -78,6 +80,17 @@ check_dependencies() {
 # Caclulate math equations with decimals. This is better than $(())
 calc(){ awk "BEGIN { print $*}"; }
 
+calculate_text_color(){
+    # I dont even know why this equation works
+    # Source: https://stackoverflow.com/a/3943023
+    intensity=$(calc "$R*0.299 + $G*0.587 + $B*0.114")
+
+    if [ $(echo "$intensity>186" | bc) -eq 1 ]; then
+        text_color="#000000"
+    else
+        text_color="#FFFFFF"
+    fi
+}
 
 main() {
 	if [ "$WAYLAND_DISPLAY" ]; then
@@ -93,22 +106,24 @@ main() {
 
 	# Combine the dir and hex color code to form the file name
 	fname=$DIR/$hex_color.png
+    
+    # Remove the hashtag
+    hex="${hex_color//\#/}"
+
+    hex_to_rgb $hex
+    calculate_text_color
 
 	# Create a 100x100 image, filled with the selected color
 	convert -size 100x100 xc:$hex_color $fname
-
 	if [ $write_color_code == true ]; then
 		color_code=$hex_color
 
 		if [ $color_type == "rgb" ]; then
-			# Remove the hashtag
-			hex="${hex_color//\#/}"
-
-			color_code=$(hex_to_rgb $hex)
+            color_code="($R,$G,$B)"
 		fi
 
 		# Write the color code in the center of the image
-		convert $fname -gravity Center -pointsize 10 -annotate 0 "$color_code" $fname
+		convert $fname -gravity Center -pointsize 10 -fill $text_color -annotate 0 "$color_code" $fname
 	fi
 
 	# Save the color code to clipboard
