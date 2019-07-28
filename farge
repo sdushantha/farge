@@ -19,7 +19,7 @@
 
 
 VERSION="1.0.3"
-DIR=/tmp/
+DIR=/tmp/farge/
 COLOR_TYPE="hex"
 WRITE_COLOR_CODE=true
 PREVIEW=true
@@ -132,9 +132,10 @@ main() {
     
     # Save the color code to clipboard
     if [ "$WAYLAND_DISPLAY" ]; then
-        echo $COLOR_CODE | wl-copy
+        # We are removing the new line char and then sending it to the clipboard
+        echo $COLOR_CODE | tr -d "\n" | wl-copy
     else
-        echo $COLOR_CODE | xclip -selection c
+        echo $COLOR_CODE | tr -d "\n" | xclip -selection c
     fi
     
     # Output the color code to stdout only if the user uses the --stdout flag
