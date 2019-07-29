@@ -19,8 +19,8 @@ it. This tool is able to use a varaiety of image viewers like ```feh```,
 #### If you use X11
 - ```colorpicker``` (https://github.com/ym1234/colorpicker)
 #### If you use Wayland
-- ```slurp``` (https://wayland.emersion.fr/slurp/)
-- ```grim```  (https://wayland.emersion.fr/grim/)
+- ```slurp``` (https://wayland.emersion.fr/slurp)
+- ```grim```  (https://wayland.emersion.fr/grim)
 - ```wl-copy```  (https://github.com/bugaevc/wl-clipboard)
 
 
@@ -41,7 +41,7 @@ $ sudo make install
 ### Install it locally
 
 ```bash
-# Download the farge source code, save as farge
+# Download the farge source code, save it as farge
 # and make it executeable
 $ curl -L https://git.io/raw-farge > farge && chmod +x farge
 
@@ -53,7 +53,7 @@ $ mv farge ~/scripts/
 ## Usage
 ```bash
 $ farge --help
-usage: farge [-h] [--no_preview] [--no_color_code] [--rbg]  [--version]
+usage: farge [-h] [--no-preview] [--no-color-code] [--rbg]  [--version]
  
 ┌─┐┌─┐┬─┐┌─┐┌─┐
 ├┤ ├─┤├┬┘│ ┬├┤ 
