@@ -69,7 +69,11 @@ optional arguments:
    --stdout              output the color value to stdout
    --version             show the version of kunst you are using
 ```
-
+## Tips
+It would be smart to bind `farge` to a keybinding. Here is an example for `i3wm` users:
+```
+bindsym $mod+Shift+f --release exec farge
+```
 ## License
 MIT License
 
