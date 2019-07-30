@@ -74,6 +74,15 @@ It would be smart to bind `farge` to a keybinding. Here is an example for `i3wm`
 ```
 bindsym $mod+Shift+f --release exec farge
 ```
+
+If you use a window manager, you can assign rules the windows so they are
+always floating. For `i3wm` user, put this in your config:
+
+```
+# Let the windows created by Farge be floating
+for_window [instance="Farge"] floating enable
+```
+
 ## License
 MIT License
 
