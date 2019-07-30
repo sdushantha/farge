@@ -83,6 +83,7 @@ check_dependencies() {
 # Caclulate math equations with decimals. This is better than $(())
 calc(){ awk "BEGIN { print $*}"; }
 
+
 calculate_text_color(){
     # I dont even know why this equation works
     # Source: https://stackoverflow.com/a/3943023
@@ -94,6 +95,7 @@ calculate_text_color(){
         TEXT_COLOR="#FFFFFF"
     fi
 }
+
 
 main() {
     if [ "$WAYLAND_DISPLAY" ]; then
@@ -146,13 +148,13 @@ main() {
     if [ $PREVIEW == true ]; then
         case $IMAGE_VIEWER in
             "mpv")
-                mpv --geometry=100x100 $FNAME &>/dev/null &
+                mpv --geometry=100x100 --title="Farge" $FNAME &>/dev/null &
                 ;;
             "feh")
-                feh --geometry=100x100 $FNAME &>/dev/null &
+                feh --geometry=100x100 --title="Farge" $FNAME &>/dev/null &
                 ;;
             "sxiv")
-                sxiv -g=100x100 -b $FNAME &>/dev/null &
+                sxiv -g=100x100 -b -N "Farge" $FNAME &>/dev/null &
                 ;;
             *)
                 # If the image viewer given by the user is not supported by
@@ -177,6 +179,7 @@ while [[ "$1" ]]; do
     esac
     shift
 done
+
 
 check_dependencies
 
