@@ -67,7 +67,7 @@ optional arguments:
    --rgb                 show the color code as RGB instead of HEX
    --image-viewer        image viewer to use to show the preview (feh, mpv, sxiv)
    --stdout              output the color value to stdout
-   --version             show the version of kunst you are using
+   --version             show the version of farge you are using
 ```
 ## Tips
 It would be smart to bind `farge` to a keybinding. Here is an example for `i3wm` users:
