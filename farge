@@ -44,7 +44,7 @@ show_help() {
     echo "   --rgb                 show the color code as RGB instead of HEX"
     echo "   --image-viewer        image viewer to use to show the preview (feh, mpv, sxiv)"
     echo "   --stdout              output the color value to stdout"
-    echo "   --version             show the version of kunst you are using"
+    echo "   --version             show the version of farge you are using"
 }
 
 
