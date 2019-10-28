@@ -156,6 +156,9 @@ main() {
             "sxiv")
                 sxiv -g=100x100 -b -N "Farge" $FNAME &>/dev/null &
                 ;;
+            "imv")
+                imv $FNAME -s shrink &>/dev/null &
+                ;;
             *)
                 # If the image viewer given by the user is not supported by
                 # farge, then let the user know
