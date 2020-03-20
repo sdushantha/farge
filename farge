@@ -126,9 +126,7 @@ main() {
     if [ $WRITE_COLOR_CODE == true ]; then
         COLOR_CODE=$HEX_COLOR
         
-        if [ $COLOR_TYPE == "rgb" ]; then
-            COLOR_CODE="($R,$G,$B)"
-        fi
+        [ $COLOR_TYPE == "rgb" ] && COLOR_CODE="($R,$G,$B)"
         
         # Write the color code in the center of the image
         convert $FNAME -gravity Center -pointsize 10 -fill $TEXT_COLOR -annotate 0 "$COLOR_CODE" $FNAME
