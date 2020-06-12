@@ -55,7 +55,7 @@ $ mv farge ~/scripts/
 ## Usage
 ```bash
 $ farge --help
-usage: farge [-h] [--no-preview] [--no-color-code] [--rbg]  [--version]
+usage: farge [OPTIONS...]
  
 ┌─┐┌─┐┬─┐┌─┐┌─┐
 ├┤ ├─┤├┬┘│ ┬├┤ 
@@ -68,9 +68,12 @@ optional arguments:
    --no-color-code       dont write the color code on the preview window
    --rgb                 show the color code as RGB instead of HEX
    --image-viewer        image viewer to use to show the preview (feh, mpv, sxiv)
+   --notify              send the color code as notification, where the icon is the selected color
+   --expire-time         amount of time the notification should be visible, in milliseconds
    --stdout              output the color value to stdout
    --version             show the version of farge you are using
 ```
+
 ## Tips
 It would be smart to bind `farge` to a keybinding. Here is an example for `i3wm` users:
 ```
