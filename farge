@@ -19,7 +19,7 @@
 
 VERSION="1.0.7"
 TEMP_DIR=/tmp/farge
-MSG=$HOME/.cache/farge.msg
+MSG=${XDG_CACHE_HOME:-$HOME/.cache}/farge.msg
 
 COLOR_TYPE="hex"
 WRITE_COLOR_CODE=true
@@ -31,23 +31,25 @@ NOTIFICATION=false
 EXPIRE_TIME=120000
 
 show_help() {
-    echo "usage: farge [OPTIONS...]"
-    echo " "
-    echo "┌─┐┌─┐┬─┐┌─┐┌─┐"
-    echo "├┤ ├─┤├┬┘│ ┬├┤ "
-    echo "┴  ┴ ┴┴└─└─┘└─┘"
-    echo "Click on a pixel on your screen and show its color value"
-    echo ""
-    echo "optional arguments:"
-    echo "   --help                show this help message and exit"
-    echo "   --no-preview          dont show the selected color in a preview window"
-    echo "   --no-color-code       dont write the color code on the preview window"
-    echo "   --rgb                 show the color code as RGB instead of HEX"
-    echo "   --image-viewer        image viewer to use to show the preview (feh, mpv, sxiv)"
-    echo "   --notify              send the color code as notification, where the icon is the selected color"
-    echo "   --expire-time         amount of time the notification should be visible, in milliseconds"
-    echo "   --stdout              output the color value to stdout"
-    echo "   --version             show the version of farge you are using"
+    cat <<EOF
+usage: farge [OPTIONS...]
+
+┌─┐┌─┐┬─┐┌─┐┌─┐
+├┤ ├─┤├┬┘│ ┬├┤
+┴  ┴ ┴┴└─└─┘└─┘
+Click on a pixel on your screen and show its color value
+
+optional arguments:
+   --help (-h)           show this help message and exit
+   --version (-v)        show the version of farge you are using
+   --no-preview          dont show the selected color in a preview window
+   --no-color-code       dont write the color code on the preview window
+   --rgb                 show the color code as RGB instead of HEX
+   --image-viewer        image viewer to use to show the preview (feh, mpv, sxiv)
+   --notify              send the color code as notification, where the icon is the selected color
+   --expire-time         amount of time the notification should be visible, in milliseconds
+   --stdout              output the color value to stdout
+EOF
 }
 
 
@@ -62,29 +64,29 @@ hex_to_rgb() {
 check_dependencies() {
     # Only check colorpicker if it's running in X,else check for slurp and grim
     if [ "$WAYLAND_DISPLAY" ]; then
-        CHECK_SLURP=$(command -v slurp)
-        CHECK_GRIM=$(command -v grim)
-        CHECK_CB=$(command -v wl-copy)
-        [ ${#CHECK_CB} -eq 0 ] && echo "wl-copy needs to be installed: https://github.com/bugaevc/wl-clipboard" && exit 1
-        [ ${#CHECK_SLURP} -eq 0 ] && echo "slurp needs to be installed: https://wayland.emersion.fr/slurp/" && exit 1
-        [ ${#CHECK_GRIM} -eq 0 ] && echo "grim need to be installed: https://wayland.emersion.fr/grim/" && exit 1
+        ! command -v grim &>/dev/null &&
+            echo "grim need to be installed: https://wayland.emersion.fr/grim" && v=" "
+        ! command -v slurp &>/dev/null &&
+            echo "slurp needs to be installed: https://wayland.emersion.fr/slurp" && v=" "
+        ! command -v wl-copy &>/dev/null &&
+            echo "wl-copy needs to be installed: https://github.com/bugaevc/wl-clipboard" && v=" "
+        [ "$v" ] && exit 1
+        unset v
     else
-        CHECK_COLORPICKER=$(command -v colorpicker)
-        [ ${#CHECK_COLORPICKER} -eq 0 ] && echo "colorpicker need to be installed: https://github.com/ym1234/colorpicker" && exit 1
+        ! command -v colorpicker &>/dev/null &&
+            echo "colorpicker need to be installed: https://github.com/ym1234/colorpicker" && exit 1
     fi
-    
-    CHECK_IMAGEMAGICK=$(command -v convert)
+
+    ! command -v convert &>/dev/null &&
+        echo "imagemagick needs to be installed" && exit 1
 
     # We are using the variable $IMAGE_VIEWER because we also have to check if
     # the image viewer the user has told us to use actually exists.
-    CHECK_IMAGE_VIEWER=$(command -v $IMAGE_VIEWER)
-    
-    [ ${#CHECK_IMAGEMAGICK} -eq 0 ] && echo "imagemagick needs to be installed" && exit 1
 
     # If the user wants to show the color and the color code through a notification,
     # then do not check if they have the image viewer installed because it wont be used
     [ $NOTIFICATION == false ] &&
-        [ ${#CHECK_IMAGE_VIEWER} -eq 0 ] &&
+        ! command -v $IMAGE_VIEWER &>/dev/null &&
         echo "$IMAGE_VIEWER needs to be installed or use another image by using --image-viewer <name>" &&
         exit 1
 }
@@ -98,7 +100,7 @@ calculate_text_color(){
     # I dont even know why this equation works
     # Source: https://stackoverflow.com/a/3943023
     INTENSITY=$(calc "$R*0.299 + $G*0.587 + $B*0.114")
-    
+
     if [ "$(echo "$INTENSITY>186" | bc)" -eq 1 ]; then
         TEXT_COLOR="#000000"
     else
@@ -133,18 +135,20 @@ image_preview(){
 
 main() {
     if [ "$WAYLAND_DISPLAY" ]; then
-        HEX_COLOR=$(grim -g "$(slurp -p)" -t ppm - | convert - -format '%[pixel:p{0,0}]' txt:- | tail -1 | grep '#' | awk '{print $3}')
+        HEX_COLOR=$(grim -g "$(slurp -p)" -t ppm - |
+            convert - -format '%[pixel:p{0,0}]' txt:- | tail -n1 |
+            grep '#' | awk '{print $3}')
     else
         HEX_COLOR=$(colorpicker -doq)
     fi
-    
+
     # If no color is chosen, then exit
-    [[ ${#HEX_COLOR} -eq 0 ]] && echo "No color was selected" && exit 1
-    
+    [[ ! $HEX_COLOR ]] && echo "No color was selected" && exit 1
+
     mkdir -p $TEMP_DIR
-    
+
     # Remove the hashtag
-    HEX="${HEX_COLOR//\#/}"
+    HEX="${HEX_COLOR#\#}"
 
     # Combine the dir and hex color code to form the file name
     FNAME="$TEMP_DIR/$HEX.png"
@@ -154,7 +158,7 @@ main() {
     # If the baground is dark, then use white as the text color.
     # If the background is light, then use a dark text color.
     calculate_text_color
-    
+
     # Create a 100x100 image, filled with the selected color
     convert -size 100x100 xc:"$HEX_COLOR" "$FNAME"
 
@@ -169,38 +173,36 @@ main() {
         # Write the color code in the center of the image
         convert "$FNAME" -gravity Center -pointsize 10 -fill "$TEXT_COLOR" -annotate 0 "$COLOR_CODE" "$FNAME"
     fi
-    
+
     # Save the color code to clipboard
     if [ "$WAYLAND_DISPLAY" ]; then
-        # We are removing the new line char and then sending it to the clipboard
-        echo "$COLOR_CODE" | tr -d "\n" | wl-copy
+        printf %s "$COLOR_CODE" | wl-copy
     else
-        echo "$COLOR_CODE" | tr -d "\n" | xclip -selection c
+        printf %s "$COLOR_CODE" | xclip -sel c
     fi
-    
+
     # Output the color code to stdout only if the user uses the --stdout flag
-    [ "$STDOUT" == true ] && echo "$COLOR_CODE"
-
-    if [ "$NOTIFICATION" == "true" ]; then
+    if [ "$STDOUT" == true ]; then
+        echo "$COLOR_CODE"
+    elif [ "$NOTIFICATION" == "true" ]; then
         notify-send "$COLOR_CODE" --icon="$FNAME" --expire-time="$EXPIRE_TIME"
-
     elif [ "$PREVIEW" == "true" ]; then
-        image_preview 
+        image_preview
     fi
 }
 
 
 while [[ "$1" ]]; do
     case "$1" in
-        "--no-preview") PREVIEW=false ;;
-        "--no-color-code") WRITE_COLOR_CODE=false ;;
-        "--rgb") COLOR_TYPE="rgb" ;;
-        "--image-viewer") IMAGE_VIEWER="$2" ;;
-        "--notify") NOTIFICATION=true ;;
-        "--expire-time") EXPIRE_TIME="$2" ;;
-        "--stdout") STDOUT=true ;;
-        "--version") echo $VERSION && exit ;;
-        "--help") show_help && exit ;;
+        -h|--help) show_help && exit ;;
+        -v|--version) echo $VERSION && exit ;;
+        --no-preview) PREVIEW=false ;;
+        --no-color-code) WRITE_COLOR_CODE=false ;;
+        --rgb) COLOR_TYPE="rgb" ;;
+        --image-viewer) IMAGE_VIEWER="$2" ;;
+        --notify) NOTIFICATION=true ;;
+        --expire-time) EXPIRE_TIME="$2" ;;
+        --stdout) STDOUT=true ;;
     esac
     shift
 done
