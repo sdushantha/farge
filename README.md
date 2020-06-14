@@ -12,7 +12,6 @@ it. This tool is able to use a varaiety of image viewers like ```feh```,
 </a>
 </p>
 
-[![Support me!](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/XoJfSVI)
 
 ## Dependencies
 - ```bash```
