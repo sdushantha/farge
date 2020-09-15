@@ -185,7 +185,7 @@ main() {
     if [ "$STDOUT" == true ]; then
         echo "$COLOR_CODE"
     elif [ "$NOTIFICATION" == "true" ]; then
-        notify-send "$COLOR_CODE" --icon="$FNAME" --expire-time="$EXPIRE_TIME"
+        notify-send -a Farge "$COLOR_CODE" --icon="$FNAME" --expire-time="$EXPIRE_TIME"
     elif [ "$PREVIEW" == "true" ]; then
         image_preview
     fi
