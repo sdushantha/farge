@@ -27,6 +27,10 @@ it. This tool is able to use a varaiety of image viewers like ```feh```,
 
 
 ## Installation
+
+### Install as a package
+```farge``` is available in the [Arch User Repository](https://aur.archlinux.org/packages/farge-git). If you use Arch or an Arch-based distro, you can use ```makepkg``` or your AUR helper of choice to install the ```farge-git``` package.
+
 ### Install using ```make```
 ```bash
 # Clone the repo
