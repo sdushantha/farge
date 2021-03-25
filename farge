@@ -25,7 +25,7 @@ COLOR_TYPE="hex"
 WRITE_COLOR_CODE=true
 PREVIEW=true
 IMAGE_VIEWER="feh"
-COLORPICKER="colorpicker"
+X11_COLORPICKER="colorpicker"
 STDOUT=false
 
 NOTIFICATION=false
@@ -47,7 +47,7 @@ optional arguments:
    --no-color-code       dont write the color code on the preview window
    --rgb                 show the color code as RGB instead of HEX
    --image-viewer        image viewer to use to show the preview (feh, mpv, sxiv)
-   --colorpicker         colorpicker to use (colorpicker, gpick)
+   --x11-colorpicker     colorpicker to use (colorpicker, gpick)
    --notify              send the color code as notification, where the icon is the selected color
    --expire-time         amount of time the notification should be visible, in milliseconds
    --stdout              output the color value to stdout
@@ -75,8 +75,8 @@ check_dependencies() {
         [ "$v" ] && exit 1
         unset v
     else
-        ! command -v $COLORPICKER &>/dev/null &&
-            echo "$COLORPICKER need to be installed or use another colorpicker by using --colorpicker <name>" && exit 1
+        ! command -v $X11_COLORPICKER &>/dev/null &&
+            echo "$X11_COLORPICKER need to be installed or use another colorpicker by using --colorpicker <name>" && exit 1
     fi
 
     ! command -v convert &>/dev/null &&
@@ -140,7 +140,7 @@ main() {
         HEX_COLOR=$(grim -g "$(slurp -p)" -t ppm - |
             convert - -format '%[pixel:p{0,0}]' txt:- | tail -n1 |
             grep '#' | awk '{print $3}')
-    elif [ "$COLORPICKER" == "gpick" ]; then
+    elif [ "$X11_COLORPICKER" == "gpick" ]; then
         HEX_COLOR=$(gpick -so)
     else
         HEX_COLOR=$(colorpicker -doq)
@@ -204,7 +204,7 @@ while [[ "$1" ]]; do
         --no-color-code) WRITE_COLOR_CODE=false ;;
         --rgb) COLOR_TYPE="rgb" ;;
         --image-viewer) IMAGE_VIEWER="$2" ;;
-        --colorpicker) COLORPICKER="$2" ;;
+        --x11-colorpicker) X11_COLORPICKER="$2" ;;
         --notify) NOTIFICATION=true ;;
         --expire-time) EXPIRE_TIME="$2" ;;
         --stdout) STDOUT=true ;;
