@@ -10,7 +10,7 @@
 #    feh (Other: mpv or sxiv, but you must specify it using the --image-viewer flag)
 #
 #  If you use X11
-#    colorpicker (https://github.com/ym1234/colorpicker)
+#    xcolor (https://github.com/Soft/xcolor)
 #
 #  If you use Wayland
 #    slurp (https://wayland.emersion.fr/slurp)
@@ -62,7 +62,7 @@ hex_to_rgb() {
 
 
 check_dependencies() {
-    # Only check colorpicker if it's running in X,else check for slurp and grim
+    # Only check xcolor if it's running in X, else check for slurp and grim
     if [ "$WAYLAND_DISPLAY" ]; then
         ! command -v grim &>/dev/null &&
             echo "grim need to be installed: https://wayland.emersion.fr/grim" && v=" "
@@ -73,8 +73,8 @@ check_dependencies() {
         [ "$v" ] && exit 1
         unset v
     else
-        ! command -v colorpicker &>/dev/null &&
-            echo "colorpicker need to be installed: https://github.com/ym1234/colorpicker" && exit 1
+        ! command -v xcolor &>/dev/null &&
+            echo "xcolor needs to be installed" && exit 1
     fi
 
     ! command -v convert &>/dev/null &&
@@ -139,7 +139,7 @@ main() {
             convert - -format '%[pixel:p{0,0}]' txt:- | tail -n1 |
             grep '#' | awk '{print $3}')
     else
-        HEX_COLOR=$(colorpicker -doq)
+        HEX_COLOR=$(xcolor --format hex)
     fi
 
     # If no color is chosen, then exit
@@ -171,7 +171,7 @@ main() {
 
     if [ $WRITE_COLOR_CODE == true ]; then
         # Write the color code in the center of the image
-        convert "$FNAME" -gravity Center -pointsize 10 -fill "$TEXT_COLOR" -annotate 0 "$COLOR_CODE" "$FNAME"
+        convert "$FNAME" -gravity Center -pointsize 10 -fill "$TEXT_COLOR" -annotate 0 "$COLOR_CODE" -font "Comfortaa" "$FNAME"
     fi
 
     # Save the color code to clipboard
