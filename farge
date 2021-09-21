@@ -60,6 +60,12 @@ hex_to_rgb() {
     B=$(printf "%d" 0x"${1:4:2}")
 }
 
+rgb_to_hex() {
+    # Convert rgb values to hex
+    R=$(echo "$1 * 255 + 0.5" | bc -l | grep -o -P ".*(?=\.)" | xargs printf "%X")
+    G=$(echo "$2 * 255 + 0.5" | bc -l | grep -o -P ".*(?=\.)" | xargs printf "%X")
+    B=$(echo "$3 * 255 + 0.5" | bc -l | grep -o -P ".*(?=\.)" | xargs printf "%X")
+}
 
 check_dependencies() {
     # Only check xcolor if it's running in X, else check for slurp and grim
@@ -72,7 +78,7 @@ check_dependencies() {
             echo "wl-copy needs to be installed: https://github.com/bugaevc/wl-clipboard" && v=" "
         [ "$v" ] && exit 1
         unset v
-    else
+    elif [ "$XDG_CURRENT_DESKTOP" != "GNOME" ]; then
         ! command -v xcolor &>/dev/null &&
             echo "xcolor needs to be installed" && exit 1
     fi
@@ -134,7 +140,18 @@ image_preview(){
 
 
 main() {
-    if [ "$WAYLAND_DISPLAY" ]; then
+    if [ "$XDG_CURRENT_DESKTOP" = "GNOME" ]; then
+        RGB=$(
+            gdbus call --session \
+                --dest org.gnome.Shell.Screenshot \
+                --object-path /org/gnome/Shell/Screenshot \
+                --method org.gnome.Shell.Screenshot.PickColor \
+                | grep -P -o "<.*>" \
+                | tr -d ",(<>)"
+        )
+        rgb_to_hex $RGB
+        HEX_COLOR="#$R$G$B"
+    elif [ "$WAYLAND_DISPLAY" ]; then
         HEX_COLOR=$(grim -g "$(slurp -p)" -t ppm - |
             convert - -format '%[pixel:p{0,0}]' txt:- | tail -n1 |
             grep '#' | awk '{print $3}')
