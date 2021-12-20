@@ -5,7 +5,7 @@ value of the color in either **HEX or RGB** format. The color code is
 automatically **saved to the clipboard**. If you want to save the color, 
 ```farge``` is able to show the color in a image viewer with the color code on
 it. This tool is able to use a varaiety of image viewers like ```feh```,
-```mpv``` and ```sxiv```. This tool works on **X11 and Wayland**.
+```mpv```, ```nsxiv``` and ```sxiv```. This tool works on **X11 and Wayland**.
 
 <p align="left">
 <img src="extra/farge.gif">
@@ -16,7 +16,7 @@ it. This tool is able to use a varaiety of image viewers like ```feh```,
 ## Dependencies
 - ```bash```
 - ```imagemagick```
-- ```feh``` (Other: ```mpv``` or ```sxiv```, but you must specify it using the ```--image-viewer``` flag)
+- ```feh``` (Other: ```mpv```, ```nsxiv``` or ```sxiv```, but you must specify it using the ```--image-viewer``` flag)
 #### If you use X11
 - ```xcolor``` (https://github.com/Soft/xcolor)
 #### If you use Wayland
@@ -70,7 +70,7 @@ optional arguments:
    --no-preview          dont show the selected color in a preview window
    --no-color-code       dont write the color code on the preview window
    --rgb                 show the color code as RGB instead of HEX
-   --image-viewer        image viewer to use to show the preview (feh, mpv, sxiv)
+   --image-viewer        image viewer to use to show the preview (feh, mpv, nsxiv, sxiv)
    --notify              send the color code as notification, where the icon is the selected color
    --expire-time         amount of time the notification should be visible, in milliseconds
    --stdout              output the color value to stdout
