@@ -1,11 +1,11 @@
 <p align="center"><img src="extra/farge_logo.png"><br><sub>✨ Click on a pixel on your screen and show its color value ✨</sub></p>
 
-```farge``` is command line tool to select pixel on the screen and return the
-value of the color in either **HEX or RGB** format. The color code is
-automatically **saved to the clipboard**. If you want to save the color, 
+```farge``` is a command line tool which you can use to select a pixel
+on the screen and get the value of its color, in either **hex or RGB** format.
+The color code is automatically **saved to the clipboard**. If you want to save the color,
 ```farge``` is able to show the color in a image viewer with the color code on
-it. This tool is able to use a varaiety of image viewers like ```feh```,
-```mpv```, ```nsxiv``` and ```sxiv```. This tool works on **X11 and Wayland**.
+it. This tool is able to work with a variety of image viewers like ```feh```,
+```mpv```, ```nsxiv``` and ```sxiv```. It works on **X11 and Wayland**.
 
 <p align="left">
 <img src="extra/farge.gif">
