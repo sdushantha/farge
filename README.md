@@ -15,6 +15,7 @@ it. This tool is able to work with a variety of image viewers like ```feh```,
 
 ## Dependencies
 - ```bash```
+- ```bc```
 - ```imagemagick```
 - ```feh``` (Other: ```mpv```, ```nsxiv``` or ```sxiv```, but you must specify it using the ```--image-viewer``` flag)
 #### If you use X11

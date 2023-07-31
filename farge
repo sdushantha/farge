@@ -77,6 +77,8 @@ check_dependencies() {
             echo "xcolor needs to be installed" && exit 1
     fi
 
+    ! command -v bc &>/dev/null &&
+        echo "bc needs to be installed" && exit 1
     ! command -v convert &>/dev/null &&
         echo "imagemagick needs to be installed" && exit 1
 
